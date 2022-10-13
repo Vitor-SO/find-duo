@@ -1,0 +1,19 @@
+import {
+  ImageBackground
+} from 'react-native';
+import tw from 'twrnc'
+import { styles } from './styles';
+import backgroundImg from '../../assets/background-galaxy.png';
+
+interface Props{
+  children: React.ReactNode;
+}
+
+export default function Background({children}: Props){
+  return (
+    <ImageBackground source={backgroundImg} defaultSource={backgroundImg}
+    style={styles.container}>
+      {children}
+    </ImageBackground>
+  );
+}
