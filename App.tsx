@@ -4,6 +4,8 @@ import  Background  from './src/Components/Background';
 import { useFonts, Inter_400Regular,Inter_600SemiBold,Inter_700Bold, Inter_900Black } from '@expo-google-fonts/inter';
 import Home  from './src/Screens/Home';
 import Loading from './src/Components/Loading';
+import { ApolloProvider } from '@apollo/client';
+import { apolloClient } from './src/Apollo';
 export default function App() {
 
   const [fontsLoaded]=useFonts({
@@ -11,9 +13,11 @@ export default function App() {
   })
 
   return (
+    <ApolloProvider client={apolloClient}>
     <Background>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent/>
       {fontsLoaded ? <Home/> : <Loading/>}
     </Background>
+    </ApolloProvider>
   );
 }
