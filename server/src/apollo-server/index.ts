@@ -1,7 +1,8 @@
 import { ApolloServer, BaseContext } from '@apollo/server';
 import { startStandaloneServer } from '@apollo/server/standalone';
 import { Prisma, PrismaClient } from '@prisma/client';
-import { teste } from '../teste';
+import { convertHourStringToHour } from '../utils/convert_hour_string_to_hour';
+import convertHourtoHourString from '../utils/convert_hour_to_hour_string';
 const prismaClient = new PrismaClient();
 const typeDefs = `#graphql
   scalar JSON
@@ -14,8 +15,8 @@ const typeDefs = `#graphql
     yearsPlaying:    Int
     discord:         String 
     weekDays:        JSON
-    hourStart:       Int
-    hourEnd:         Int
+    hourStart:       String
+    hourEnd:         String
     useVoiceChannel: Boolean
     createAt:        DateTime 
   }
@@ -42,8 +43,8 @@ const typeDefs = `#graphql
     yearsPlaying:    Int
     discord:         String 
     weekDays:        JSON
-    hourStart:       Int
-    hourEnd:         Int
+    hourStart:       String
+    hourEnd:         String
     useVoiceChannel: Boolean
     ): Ad
   }
@@ -78,7 +79,7 @@ const resolvers = {
   },
 
   adsByGame: async (_: any,args:{id:string}) => {
-    return await prismaClient.ad.findMany({
+    const adResponse =  await prismaClient.ad.findMany({
       select:{
         id: true,
         name: true,
@@ -95,28 +96,38 @@ const resolvers = {
         gameId: args.id
       }
     })
+
+    const newAd = adResponse.map(ad =>{
+      return {
+        ...ad,
+        hourStart: convertHourtoHourString(ad.hourStart),
+        hourEnd: convertHourtoHourString(ad.hourEnd)
+      }
+    })
+
+    return newAd
   },
   },
   Mutation:{
-    async createAd(_: any,
-      name: string,gameId:string,yearsPlaying: number,discord: string,weekDays: {}, hourStart: string,
-      hourEnd: string,useVoiceChannel: boolean)
+    async createAd(_: any,args:{name: string,gameId:string,yearsPlaying:number,discord:string,weekDays:{},
+       hourStart:string,hourEnd:string,weekDayStart:string,weekDayEnd:string,useVoiceChannel:boolean})
        {
-      // let newHourStart = convertHourStringToHour(hourStart);
-      // let newHourEnd = convertHourStringToHour(hourEnd); 
-
-      // const createAdData: Prisma.AdCreateInput = {
-      //   name: name,
-      //   yearsPlaying: yearsPlaying,
-      //   discord: discord,
-      //   weekDays: weekDays,
-      //   hourStart: newHourStart,
-      //   hourEnd: newHourEnd,
-      //   useVoiceChannel: useVoiceChannel
-      // }
-      // await prismaClient.ad.create({
-      //   data: createAdData
-      // })
+         let newHourStart = convertHourStringToHour(args.hourStart);
+         let newHourEnd = convertHourStringToHour(args.hourEnd); 
+         
+      const createAdData: Prisma.AdCreateInput = {
+        name:args.name,
+        gameId: args.gameId,
+        yearsPlaying: args.yearsPlaying,
+        discord:args.discord,
+        weekDays: args.weekDays,
+        hourStart: newHourStart,
+        hourEnd: newHourEnd,
+        useVoiceChannel:args.useVoiceChannel,
+      }
+      await prismaClient.ad.create({
+        data: createAdData
+      })
     }
   }
 };   
@@ -126,8 +137,9 @@ const server = new ApolloServer<BaseContext>({
   resolvers,
 });
 
-const { url } = await startStandaloneServer(server,{
+startStandaloneServer(server,{
   listen: {port: 4000}
-} );
+} ).then(({url})=>{
 
-console.log(`🚀  Server ready at: ${url}`, teste);
+  console.log(`🚀  Server ready at: ${url}`);
+});
