@@ -7,28 +7,20 @@ import {
 import {useEffect, useState} from 'react'
 import tw from 'twrnc'
 import logoImg from '../../assets/logo-nlw-esports.png'
-import { GameCard } from '../../Components/GameCard';
+import { GameCard,IGameCardProps } from '../../Components/GameCard';
 import { Heading } from '../../Components/Heading';
 import {GAMES} from '../../utils/games'
 import { useQuery } from '@apollo/client';
 import { GAME } from '../../Apollo/Queries/Game';
 
 export interface IGameQuery {
-  game: Game[];
+  game: IGameCardProps[];
 }
 
-interface Game{
-  id: string;
-  title: string;
-  bannerUrl: string;
-  _count: {
-    ads: number
-  }
-}
 
 export default function Home(){
   const {error,data} = useQuery<IGameQuery>(GAME)
-  const [dataGameQuery,setDataGameQuery] = useState<Game[]>([])
+  const [dataGameQuery,setDataGameQuery] = useState<IGameCardProps[]>([])
   useEffect(() => {
     if(data?.game){
       setDataGameQuery(data?.game)

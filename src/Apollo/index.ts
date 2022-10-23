@@ -1,7 +1,7 @@
 import { ApolloClient, InMemoryCache } from "@apollo/client";
 
 export const apolloClient = new ApolloClient({
-  uri: process.env.APOLLO_URL,
+  uri: 'http://192.168.0.105:4000',
   credentials: "include",
   cache: new InMemoryCache()
 });
