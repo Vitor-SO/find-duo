@@ -6,6 +6,7 @@ import Home  from './src/Screens/Home';
 import Loading from './src/Components/Loading';
 import { ApolloProvider } from '@apollo/client';
 import { apolloClient } from './src/Apollo';
+import Routes from './src/routes';
 export default function App() {
 
   const [fontsLoaded]=useFonts({
@@ -16,7 +17,7 @@ export default function App() {
     <ApolloProvider client={apolloClient}>
     <Background>
       <StatusBar barStyle="light-content" backgroundColor="transparent" translucent/>
-      {fontsLoaded ? <Home/> : <Loading/>}
+      {fontsLoaded ? <Routes/> : <Loading/>}
     </Background>
     </ApolloProvider>
   );
