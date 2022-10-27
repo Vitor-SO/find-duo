@@ -7,7 +7,7 @@ import tw from 'twrnc'
 import logoImg from '../../assets/logo-nlw-esports.png'
 import { GameCard,IGameCardProps } from '../../Components/GameCard';
 import { Heading } from '../../Components/Heading';
-import { useQuery } from '@apollo/client';
+import {  useQuery } from '@apollo/client';
 import { GAME } from '../../Apollo/Queries/Game';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Background from '../../Components/Background';
@@ -19,7 +19,7 @@ export interface IGameQuery {
 
 
 export default function Home(){
-  const {error,data} = useQuery<IGameQuery>(GAME)
+  const {data} = useQuery<IGameQuery>(GAME)
   const [dataGameQuery,setDataGameQuery] = useState<IGameCardProps[]>([])
   const navigation = useNavigation()
 
@@ -32,7 +32,7 @@ export default function Home(){
     if(data?.game){
       setDataGameQuery(data?.game)
     }else{
-      console.log(error);
+      console.log('carregando...');
       
     }
 

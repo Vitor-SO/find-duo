@@ -15,8 +15,7 @@ import { useEffect, useState } from 'react';
 import { AdsByGame } from '../../Apollo/Queries/AdsByGame';
 import { useQuery } from '@apollo/client';
 import tw from 'twrnc'
-
-
+import { DuoMatch } from '../../Components/DuoMatch';
 
 
 export interface IAdsByGameQuery{
@@ -28,7 +27,10 @@ export default function Game(){
   const route = useRoute()
   const game = route.params as GameParams
   const navigation = useNavigation()
+
+  
   const [duos,setDuos] = useState<IDuoCardProps[]>([])
+  const [discordDuoSelected,setDiscordDuoSelected] = useState('')
 
   function handleGoBack(){
     navigation.goBack()
@@ -40,6 +42,8 @@ export default function Game(){
       "id": game.id,
     }
   } )
+
+
   useEffect(() => {
     if(data?.adsByGame){
       setDuos(data?.adsByGame)
@@ -48,7 +52,6 @@ export default function Game(){
     }
   }, [data])
   
-
   return (
     <Background>
     <SafeAreaView style={styles.container}>
@@ -79,7 +82,7 @@ export default function Game(){
         keyExtractor={(item) => item?.id}
         renderItem={({item})=>(
           <ScrollView >
-          <DuoCard data={item} onConnect={()=> {}}/>
+          <DuoCard data={item} onConnect={()=> setDiscordDuoSelected(item.discord)}/>
         </ScrollView>
         )}
         horizontal
@@ -91,7 +94,11 @@ export default function Game(){
           </Text>
         )}
       />
-   
+        <DuoMatch 
+          visible={discordDuoSelected.length > 0}
+          discord={discordDuoSelected}
+          onClose={() => setDiscordDuoSelected('')}
+        />
     </SafeAreaView>
     </Background>
   );
